@@ -1,26 +1,26 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Editor } from './core/editor/Editor';
+import { Frame } from './core/render/Frame';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Editor>
+        <Frame>
+          <div>
+            <h2>hello</h2>
+            <p>world</p>
+          </div>
+        </Frame>
+      </Editor>
     </div>
   );
+}
+
+const Demo: React.FC<any> = ({ chlidren }) => {
+  return (
+    <p>heeeello</p>
+  )
 }
 
 export default App;
