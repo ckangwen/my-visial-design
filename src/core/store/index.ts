@@ -3,18 +3,23 @@ import { createLogger } from 'redux-logger'
 import thunk from 'redux-thunk'
 import reducer from './reducer'
 
-const middleware = [ thunk ];
+const middlewares = [ thunk ];
 if (process.env.NODE_ENV !== 'production') {
-  middleware.push(createLogger());
+  middlewares.push(createLogger());
 }
-const reduxDevTools =
-  typeof window !== 'undefined' &&
-  (window as any).__REDUX_DEVTOOLS_EXTENSION__
+// export const store = createStore(
+//   reducer,
+//   composeEnhancers(
+//     applyMiddleware(...middlewares),
+//   )
+// )
 
-const composeEnhancers = reduxDevTools || compose;
-export const store = createStore(
-  reducer,
-  composeEnhancers(
-    applyMiddleware(...middleware),
-  )
-)
+function configureStore(preloadedState?: any) {
+  const middlewareEnhancer = applyMiddleware(...middlewares);
+  const enhancers = [middlewareEnhancer];
+  const composedEnhancers = compose(...enhancers) as any;
+  const store = createStore(reducer, preloadedState, composedEnhancers);
+  return store;
+}
+
+export const store = configureStore()

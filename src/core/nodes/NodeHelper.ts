@@ -1,8 +1,9 @@
 import React from 'react'
-import { ROOT_ID } from '@/shared';
+import { ROOT_ID,getDOMInfo } from '@/shared';
 import {
   NodeDescriptor,
-  NodeIdType
+  NodeIdType,
+  NodeDescriptorMapping
 } from '@/types';
 import { parseNodeFromJSX, createNodeDescriptor } from './helpers';
 
@@ -15,6 +16,7 @@ type NodeDescriptorTree = {
 export class NodeHelper {
   node: NodeDescriptor
   id: NodeIdType
+  nodes: NodeDescriptorMapping
 
   constructor(node?: NodeDescriptor, id?: NodeIdType) {
     this.node = node
@@ -26,6 +28,9 @@ export class NodeHelper {
   }
   receiveNode(node: NodeDescriptor) {
     this.node = node
+  }
+  receiveNodes(nodes: NodeDescriptorMapping) {
+    this.nodes = nodes
   }
 
   get() {
@@ -67,7 +72,6 @@ export class NodeHelper {
       childrenNodes = React.Children.toArray(reactElement.props.children).reduce((accum: any[], child) => {
         if (React.isValidElement(child)) {
           accum.push(this.parseReactNode(child, normalize));
-          console.log(this.parseReactNode(child, normalize));
         } else if (typeof child === 'string') {
           accum.push(mergeTrees(this.createTextNode(child), []))
         }
@@ -81,6 +85,38 @@ export class NodeHelper {
     const textNode = createNodeDescriptor({ data: {} as any})
     textNode.data.text = text
     return textNode
+  }
+
+  getDropPlaceholder(
+    sourceId: NodeIdType,
+    targetId: NodeIdType,
+    coordinate: {x: number, y: number }
+  ) {
+    const sourceNode = this.nodes[sourceId],
+          targetNode = this.nodes[targetId],
+          targetParentNode = this.nodes[targetNode.data.parent],
+          targetNextSiblingNodes = targetParentNode.data.nodes
+
+    if (!targetParentNode) return
+
+    const dimensionsInContainer = targetNextSiblingNodes ? targetNextSiblingNodes.reduce((result, id) => {
+      const dom = this.idToDOM(id)
+      if (dom) {
+        const info = {
+          id,
+          ...getDOMInfo(dom)
+        }
+
+        result.push(info)
+      }
+      return result
+    }, []) : []
+
+    console.log(dimensionsInContainer);
+  }
+
+  private idToDOM(id: NodeIdType) {
+    return this.nodes[id].dom
   }
 }
 

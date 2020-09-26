@@ -8,6 +8,7 @@ export interface INodeProvider {
 export type NodeDescriptor = {
   id: NodeIdType
   data: NodeDataType
+  dom?: Element
   events: NodeEventType
   rules: NodeRulesType
   related:  NodeRelatedType

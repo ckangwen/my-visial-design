@@ -16,6 +16,11 @@ export type DeleteNodePayload = {
   id: NodeIdType
 }
 
+export type SetNodeDomPayload = {
+  id: NodeIdType
+  el: Element
+}
+
 export type UpdateEventPayload = {
   key: string
   value: null | undefined | false | string

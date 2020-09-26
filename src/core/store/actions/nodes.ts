@@ -1,3 +1,4 @@
+import { SET_NODE_DOM } from '../types';
 import {
   ADD_NODE,
   UPDATE_NODE,
@@ -10,7 +11,8 @@ import {
   AddNodePayload,
   NodeDescriptor,
   NodeIdType,
-  AddMulitNodesPayload
+  AddMulitNodesPayload,
+  SetNodeDomPayload
 } from '@/types'
 
 const updateNodeAction = (payload: UpdateNodePayload): Action<UpdateNodePayload> => ({
@@ -21,8 +23,12 @@ const addNodeAction = (payload: AddNodePayload): Action<AddNodePayload> => ({
   type: ADD_NODE,
   payload
 })
-const addMulitNodes = (payload: AddMulitNodesPayload): Action<AddMulitNodesPayload> => ({
+const addMulitNodesAction = (payload: AddMulitNodesPayload): Action<AddMulitNodesPayload> => ({
   type: ADD_MULIT_NODES,
+  payload
+})
+const setNodeDomAction = (payload: SetNodeDomPayload): Action<SetNodeDomPayload> => ({
+  type: SET_NODE_DOM,
   payload
 })
 
@@ -55,14 +61,14 @@ export function addNewNode(node: NodeDescriptor, parentId: NodeIdType, index?: n
 
 export function addNodesB(nodes: PlainObject<NodeDescriptor>) {
   return function(dispatch) {
-    dispatch(addMulitNodes({ nodes }))
+    dispatch(addMulitNodesAction({ nodes }))
   }
 }
 
 
-export function moveNode(parentId: NodeIdType, id: NodeIdType, index?: number) {
+export function setNodeDOM(id: NodeIdType, el: Element) {
   return function (dispatch, getState) {
-    
+    dispatch(setNodeDomAction({ id, el }))
   }
 }
 

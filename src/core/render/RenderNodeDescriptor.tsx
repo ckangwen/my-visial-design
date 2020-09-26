@@ -1,22 +1,13 @@
-import { type } from 'os'
-import React, { useMemo } from 'react'
+import React, { useContext, useMemo } from 'react'
 import { NodeIdType } from '@/types';
 import { useSelector } from 'react-redux';
 import { NodeDescriptor } from '../../types/node';
 import { NodeElement } from '../nodes/NodeElement';
+import { NodeContext } from '../nodes/NodeContext';
 
-const defaultOnRender = ({ render }) => render
-
-const Render = () => {
-}
-
-export type RenderNodeDescriptorType = {
-  id: NodeIdType
-}
-
-export const RenderNodeDescriptor: React.FC<RenderNodeDescriptorType> = ({ id }) => {
-  const onRender = defaultOnRender
+export const RenderNodeDescriptor: React.FC<any> = () => {
   const nodesState = useSelector<any>(state => state.nodes) as any
+  const { id } = useContext(NodeContext)
 
   const targetNode: NodeDescriptor = nodesState.nodes[id]
   const { data: { type, props, nodes, text } } = targetNode
@@ -33,5 +24,4 @@ export const RenderNodeDescriptor: React.FC<RenderNodeDescriptorType> = ({ id })
 
     return render
   }, [nodes, props, text, type])
-  // return React.createElement(onRender, { render: <Render /> });
 }
