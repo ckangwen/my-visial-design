@@ -4,7 +4,7 @@ import {
   NodeDescriptor,
   NodeIdType
 } from '@/types';
-import { parseNodeFromJSX } from './helpers';
+import { parseNodeFromJSX, createNodeDescriptor } from './helpers';
 
 
 type NodeDescriptorTree = {
@@ -61,19 +61,26 @@ export class NodeHelper {
         normalize(node, jsx);
       }
     })
-
     let childrenNodes: NodeDescriptorTree[] = []
     if (reactElement.props && reactElement.props.children) {
       // 如果有子节点，则解析子节点
       childrenNodes = React.Children.toArray(reactElement.props.children).reduce((accum: any[], child) => {
         if (React.isValidElement(child)) {
           accum.push(this.parseReactNode(child, normalize));
+          console.log(this.parseReactNode(child, normalize));
+        } else if (typeof child === 'string') {
+          accum.push(mergeTrees(this.createTextNode(child), []))
         }
         return accum;
       }, []) as any[]
     }
 
     return mergeTrees(node, childrenNodes) as NodeDescriptorTree;
+  }
+  createTextNode(text: string = '') {
+    const textNode = createNodeDescriptor({ data: {} as any})
+    textNode.data.text = text
+    return textNode
   }
 }
 

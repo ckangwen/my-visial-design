@@ -27,6 +27,7 @@ export type NodeDataType = {
   custom: PlainObject<any>
   displayName: string
   nodes:  string[]
+  text?: string
   [key: string]: any
 }
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { ROOT_ID } from '../../shared/constants';
-import { addNewNode, addNodesB } from '../store/actions/nodes';
+import { addNodesB } from '../store/actions/nodes';
 import { NodeElement } from '../nodes/NodeElement';
 import { useNodeHelper } from '../nodes/useNodeHelper';
 

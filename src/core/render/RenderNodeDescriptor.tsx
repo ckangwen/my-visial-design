@@ -19,9 +19,9 @@ export const RenderNodeDescriptor: React.FC<RenderNodeDescriptorType> = ({ id })
   const nodesState = useSelector<any>(state => state.nodes) as any
 
   const targetNode: NodeDescriptor = nodesState.nodes[id]
-  const { data: { type, props, nodes } } = targetNode
+  const { data: { type, props, nodes, text } } = targetNode
   return useMemo(() => {
-    const render = React.createElement(
+    const render = type ? React.createElement(
       type,
       props || {},
       <React.Fragment>
@@ -29,10 +29,9 @@ export const RenderNodeDescriptor: React.FC<RenderNodeDescriptorType> = ({ id })
           nodes ? nodes.map((id) => (<NodeElement key={id} id={id} />)) : props && props.children
         }
       </React.Fragment>
-    )
-
+    ) : (<React.Fragment>{text}</React.Fragment>)
 
     return render
-  }, [nodes, props, type])
+  }, [nodes, props, text, type])
   // return React.createElement(onRender, { render: <Render /> });
 }

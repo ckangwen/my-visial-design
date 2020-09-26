@@ -44,9 +44,9 @@ export function createNodeDescriptor(
     type: actualType,
     props: { ...newNode.data.props },
     name:
-      typeof actualType == 'string' ? actualType : (actualType as any).name,
+      actualType ? typeof actualType == 'string' ? actualType : (actualType as any).name : actualType,
     displayName:
-      typeof actualType == 'string' ? actualType : (actualType as any).name,
+      actualType ? typeof actualType == 'string' ? actualType : (actualType as any).name: actualType,
     custom: {},
     isCanvas: false,
     hidden: false,
@@ -67,9 +67,8 @@ export function createNodeDescriptor(
     canDrop: () => true,
     canMoveIn: () => true,
     canMoveOut: () => true,
-    ...((actualType.craft && actualType.craft.rules) || {}),
+    ...((actualType && actualType.craft && actualType.craft.rules) || {}),
   };
-  // if (node.data.type === Element || node.data.type === Canvas) {
 
   if (normalize) {
     normalize(node);

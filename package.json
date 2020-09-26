@@ -148,6 +148,12 @@
     ]
   },
   "devDependencies": {
-    "@types/react-redux": "^7.1.9"
+    "@types/react-redux": "^7.1.9",
+    "cz-conventional-changelog": "3.3.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
