@@ -1,4 +1,4 @@
-import { UPDATE_EVENT } from '../types';
+import { UPDATE_EVENT, UPDATE_INDICATOR } from '../types';
 import {
   Action,
   UpdateEventPayload,
@@ -7,6 +7,10 @@ import {
 
 export const updateEventAction = (payload: UpdateEventPayload): Action<UpdateEventPayload> => ({
   type: UPDATE_EVENT,
+  payload
+})
+export const updateIndicatorAction = (payload) => ({
+  type: UPDATE_INDICATOR,
   payload
 })
 
@@ -19,5 +23,11 @@ export function updateEvents(id: NodeIdType, isDelete?: boolean) {
         dispatch(updateEventAction({ key, value: isDelete ? null : id }))
       }
     })
+  }
+}
+
+export function updateIndicator(indicator) {
+  return function(dispatch) {
+    dispatch(updateIndicatorAction(indicator))
   }
 }

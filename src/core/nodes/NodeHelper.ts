@@ -1,11 +1,20 @@
 import React from 'react'
-import { ROOT_ID,getDOMInfo } from '@/shared';
+import invariant from 'tiny-invariant'
+import {
+  ROOT_ID,
+  ERROR_CANNOT_DRAG,
+  ERROR_MOVE_INCOMING_PARENT,
+  ERROR_MOVE_CANNOT_DROP,
+  getDOMInfo
+} from '@/shared';
 import {
   NodeDescriptor,
   NodeIdType,
-  NodeDescriptorMapping
+  NodeDescriptorMapping,
+  Indicator
 } from '@/types';
 import { parseNodeFromJSX, createNodeDescriptor } from './helpers';
+import findPosition from './helpers';
 
 
 type NodeDescriptorTree = {
@@ -33,8 +42,8 @@ export class NodeHelper {
     this.nodes = nodes
   }
 
-  get() {
-    return this.node;
+  getNode(id) {
+    return id ? this.nodes[id] : this.node;
   }
 
   childrenIds() {
@@ -49,8 +58,45 @@ export class NodeHelper {
     return this.node.id === ROOT_ID
   }
 
-  isDraggable() {}
-  isDroppable() {}
+  isDraggable({ node, id, onError }: { node?: NodeDescriptor, id?: NodeIdType, onError: (error: Error) => any}) {
+    try {
+      const target = node
+        ? node
+        : id
+          ? this.nodes[id]
+          : this.node
+      invariant(
+        target.rules.canDrag(target, this),
+        ERROR_CANNOT_DRAG
+      )
+      return true
+    } catch (error) {
+      onError(error)
+      return false
+    }
+  }
+  // TODO 待完善
+  isDroppable({ node, id, onError }: { node?: NodeDescriptor, id?: NodeIdType, onError: (error: Error) => any}) {
+    try {
+      const target = node
+        ? node
+        : id
+          ? this.nodes[id]
+          : this.node
+      invariant(
+        target.rules.canMoveIn(target, this),
+        ERROR_MOVE_INCOMING_PARENT
+      )
+      invariant(
+        target.rules.canDrop(target, this),
+        ERROR_MOVE_CANNOT_DROP
+      )
+      return true
+    } catch (error) {
+      onError(error)
+      return false
+    }
+  }
   toSerializedNode() {}
   toNodeTree() {}
 
@@ -86,16 +132,15 @@ export class NodeHelper {
     textNode.data.text = text
     return textNode
   }
-
   getDropPlaceholder(
     sourceId: NodeIdType,
     targetId: NodeIdType,
     coordinate: {x: number, y: number }
   ) {
-    const sourceNode = this.nodes[sourceId],
-          targetNode = this.nodes[targetId],
-          targetParentNode = this.nodes[targetNode.data.parent],
-          targetNextSiblingNodes = targetParentNode.data.nodes
+    const sourceNode = this.nodes[sourceId]
+    const targetNode = this.nodes[targetId]
+    const targetParentNode = targetNode.id === ROOT_ID ? targetNode : this.nodes[targetNode.data.parent]
+    const targetNextSiblingNodes = targetParentNode.data.nodes
 
     if (!targetParentNode) return
 
@@ -112,15 +157,31 @@ export class NodeHelper {
       return result
     }, []) : []
 
-    console.log(dimensionsInContainer);
+    const dropAction = findPosition(
+      targetParentNode,
+      dimensionsInContainer,
+      coordinate.x,
+      coordinate.y
+    )
+
+    const currentNode = targetNextSiblingNodes.length && this.nodes[targetNextSiblingNodes[dropAction.index]]
+
+    const output: Indicator = {
+      placement: {
+        currentNode,
+        dragNode: sourceNode,
+        ...dropAction
+      },
+      error: false,
+    }
+
+    return output
   }
 
   private idToDOM(id: NodeIdType) {
     return this.nodes[id].dom
   }
 }
-
-
 
 export const mergeTrees = (
   rootNode: NodeDescriptor,

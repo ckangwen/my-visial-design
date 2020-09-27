@@ -33,9 +33,9 @@ export type NodeDataType = {
 }
 
 export type NodeEventType = {
-  selected: boolean
-  dragged: boolean
-  hovered: boolean
+  selected: string | null | boolean
+  dragged: string | null | boolean
+  hovered: string | null | boolean
 }
 
 export type NodeIdType = string
@@ -48,3 +48,25 @@ export type NodeRulesType = {
 }
 
 export type NodeRelatedType = any
+
+export type NodeBoxInfo = {
+  id?: NodeIdType
+} & DOMInfo;
+
+export type DOMInfo = Record<
+  | 'x'
+  | 'y'
+  | 'top'
+  | 'left'
+  | 'bottom'
+  | 'right'
+  | 'width'
+  | 'height'
+  | 'outerWidth'
+  | 'outerHeight',
+  number
+> & {
+  inFlow: boolean;
+  margin: Record<'top' | 'left' | 'bottom' | 'right', number>;
+  padding: Record<'top' | 'left' | 'bottom' | 'right', number>;
+};

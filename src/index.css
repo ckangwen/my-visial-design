@@ -2,4 +2,19 @@
   width: 150px;
   height: 150px;
   background: #ccc;
+  display: inline-block;
+  margin: 10px;
+}
+.box2 {
+  width: 500px;
+  height: 500px;
+  background: rgb(231, 118, 118);
+}
+
+.drag-item {
+  width: 50px;
+  height: 50px;
+  background: #000;
+  color: #fff;
+  cursor: move;
 }

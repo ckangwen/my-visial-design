@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux'
 import { ROOT_ID } from '../../shared/constants';
 import { addNodesB } from '../store/actions/nodes';
 import { NodeElement } from '../nodes/NodeElement';
-import { useNodeHelper } from '../nodes/useNodeHelper';
+import { useNodeHelper } from '../hooks/useNodeHelper';
 
 type FrameProps = {
   data?: any

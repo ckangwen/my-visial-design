@@ -1,4 +1,4 @@
-import { SET_NODE_DOM } from '../types';
+import { SET_NODE_DOM, UPDATE_NODE_PROPERTY, SET_NODES } from '../types';
 import {
   ADD_NODE,
   UPDATE_NODE,
@@ -8,11 +8,13 @@ import {
   PlainObject,
   Action,
   UpdateNodePayload,
+  UpdateNodePropertyPayload,
   AddNodePayload,
   NodeDescriptor,
   NodeIdType,
   AddMulitNodesPayload,
-  SetNodeDomPayload
+  SetNodeDomPayload,
+  SetNodesPayload
 } from '@/types'
 
 const updateNodeAction = (payload: UpdateNodePayload): Action<UpdateNodePayload> => ({
@@ -29,6 +31,14 @@ const addMulitNodesAction = (payload: AddMulitNodesPayload): Action<AddMulitNode
 })
 const setNodeDomAction = (payload: SetNodeDomPayload): Action<SetNodeDomPayload> => ({
   type: SET_NODE_DOM,
+  payload
+})
+const updateNodePropertyAction = (payload: UpdateNodePropertyPayload): Action<UpdateNodePropertyPayload> => ({
+  type: UPDATE_NODE_PROPERTY,
+  payload
+})
+const setNodesAction = (payload: SetNodesPayload): Action<SetNodesPayload> => ({
+  type: SET_NODES,
   payload
 })
 
@@ -69,6 +79,18 @@ export function addNodesB(nodes: PlainObject<NodeDescriptor>) {
 export function setNodeDOM(id: NodeIdType, el: Element) {
   return function (dispatch, getState) {
     dispatch(setNodeDomAction({ id, el }))
+  }
+}
+
+export function setNodes(id: NodeIdType, nodes: NodeIdType[]) {
+  return function (dispatch, getState) {
+    dispatch(setNodesAction({ id, nodes }))
+  }
+}
+
+export function updateNodeProperty(id: NodeIdType, key: string, value: any) {
+  return function (dispatch) {
+    dispatch(updateNodePropertyAction({ id, key, value }))
   }
 }
 

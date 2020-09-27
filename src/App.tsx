@@ -9,30 +9,30 @@ function App() {
     <div className="App">
       <Editor>
         <Frame>
-          <div>
+          <Container3>
             <Container2 />
-            <Demo />
-            <h2>hello</h2>
-            <p>world</p>
-            <Container />
-          </div>
+            <Container2 />
+            <Container>
+              <Demo />
+            </Container>
+          </Container3>
         </Frame>
       </Editor>
     </div>
   );
 }
 
-const Demo: React.FC<any> = ({ chlidren }) => {
+const Demo: React.FC<any> = ({ children }) => {
   const {connect} = useNode()
   const refFn = function (el) {
     connect(el)
   }
   return (
-    <p ref={refFn}>heeeello</p>
+    <div className="drag-item" ref={refFn}>C</div>
   )
 }
 
-const Container: React.FC<any> = ({ chlidren }) => {
+const Container: React.FC<any> = ({ children }) => {
   const {connect} = useNode()
   const refFn = function (el) {
     connect(el)
@@ -40,11 +40,12 @@ const Container: React.FC<any> = ({ chlidren }) => {
   return (
     <div className="box" ref={refFn}>
       Box
+      { children }
     </div>
   )
 }
 
-const Container2: React.FC<any> = ({ chlidren }) => {
+const Container2: React.FC<any> = ({ children }) => {
   const {connect} = useNode()
   const refFn = function (el) {
     connect(el)
@@ -52,6 +53,17 @@ const Container2: React.FC<any> = ({ chlidren }) => {
   return (
     <div className="box" ref={refFn}>
       Box2
+    </div>
+  )
+}
+const Container3: React.FC<any> = ({ children }) => {
+  const {connect} = useNode()
+  const refFn = function (el) {
+    connect(el)
+  }
+  return (
+    <div className="box2" ref={refFn}>
+      { children }
     </div>
   )
 }

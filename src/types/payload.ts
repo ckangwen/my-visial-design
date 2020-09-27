@@ -6,6 +6,17 @@ export type UpdateNodePayload = {
   node: NodeDescriptor
 }
 
+export type SetNodesPayload = {
+  id: NodeIdType
+  nodes: NodeIdType[]
+}
+
+export type UpdateNodePropertyPayload = {
+  id: NodeIdType
+  key: string
+  value: any
+}
+
 export type AddNodePayload = UpdateNodePayload
 
 export type AddMulitNodesPayload = {
