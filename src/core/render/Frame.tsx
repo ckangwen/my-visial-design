@@ -1,35 +1,23 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, {  useEffect, useRef } from 'react'
 import { useDispatch } from 'react-redux'
 import { ROOT_ID } from '../../shared/constants';
 import { addNodesB } from '../store/actions/nodes';
 import { NodeElement } from '../nodes/NodeElement';
 import { useNodeHelper } from '../hooks/useNodeHelper';
 
-type FrameProps = {
-  data?: any
-}
-
-
-export const Frame: React.FC<FrameProps> = ({ children, data }) => {
+export const Frame: React.FC<any> = ({ children }) => {
   const dispatch = useDispatch()
   const nodeHelper = useNodeHelper()
-  const [inited, setInited] = useState<any>(false);
-  const initialState = useRef({
-    initialChildren: children,
-    initialData: data,
-  })
+  const inited = useRef<boolean>(false)
   // 在inited更新之后，Frame会重新执行
   // 为了防止两次重复执行useEffect中的计算，用root作为标志位判断是否已经执行过一次
-  const root = useRef(null)
 
   useEffect(() => {
-    const { initialChildren } = initialState.current
 
-    if (initialChildren && !root.current) {
+    if (children) {
       const rootNode = React.Children.only(
-        initialChildren
+        children
       ) as React.ReactElement;
-      root.current = root
 
       const nodeTree = nodeHelper.parseReactNode(rootNode, (node, jsx) => {
         if (jsx === rootNode) {
@@ -38,10 +26,10 @@ export const Frame: React.FC<FrameProps> = ({ children, data }) => {
         return node;
       })
       dispatch(addNodesB(nodeTree.nodes))
-
-      setInited(true)
+      inited.current = true
     }
 
-  }, [dispatch, nodeHelper])
-  return inited && <NodeElement id={ROOT_ID} />
+  }, [children, dispatch, nodeHelper])
+
+  return inited.current && <NodeElement id={ROOT_ID} />
 }

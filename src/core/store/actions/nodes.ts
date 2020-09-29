@@ -83,7 +83,7 @@ export function setNodeDOM(id: NodeIdType, el: Element) {
 }
 
 export function setNodes(id: NodeIdType, nodes: NodeIdType[]) {
-  return function (dispatch, getState) {
+  return function (dispatch) {
     dispatch(setNodesAction({ id, nodes }))
   }
 }
@@ -93,48 +93,3 @@ export function updateNodeProperty(id: NodeIdType, key: string, value: any) {
     dispatch(updateNodePropertyAction({ id, key, value }))
   }
 }
-
-// export function deleteNode(id: NodeIdType, parentId: NodeIdType) {
-//   return function (dispatch, getState) {
-//     const nodes: NodeDescriptorMapping = getState().nodes
-//     const target = nodes[id]
-//     const parent = nodes[parentId]
-//     const parentChildren = parent.data.nodes
-//     let newNodes
-//     let IdsToDelete = []
-
-//     // 从父节点的子节点列表中删除
-//     parentChildren.splice(parentChildren.indexOf(id), 1)
-
-//     // 删除本节点之前，需要先把子节点删除
-//     if (target.data.nodes) {
-//       newNodes = [...target.data.nodes].map(childId => {
-//         IdsToDelete.push(childId)
-//         return deletChildNode(target, childId)
-//       })
-//     }
-
-
-//     updateEvents(id, true)
-//     dispatch(deleteNodeAction())
-//   }
-// }
-
-// function deletChildNode(node: NodeDescriptor, childId) {
-//   const nodes = node.data.nodes
-//   nodes.splice(nodes.indexOf(childId), 1)
-//   return nodes
-// }
-
-// function ddd({parent, child, parentId, childId, getState }) {
-//   const parentChildren = parent.data.nodes
-//     // 从父节点的子节点列表中删除
-//     parentChildren.splice(parentChildren.indexOf(childId), 1)
-
-//     // 删除本节点之前，需要先把子节点删除
-//     if (child.data.nodes) {
-//       [...child.data.nodes].forEach(childId => {
-//         // ddd({ parent: child })
-//       })
-//     }
-// }

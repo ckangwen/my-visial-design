@@ -186,10 +186,13 @@ export class NodeHelper {
 export const mergeTrees = (
   rootNode: NodeDescriptor,
   childrenNodes: NodeDescriptorTree[]
-): any => ({
+): any => {
+
+  return {
   rootNodeId: rootNode.id,
   nodes: mergeNodes(rootNode, childrenNodes),
-});
+}
+}
 
 const mergeNodes = (rootNode: NodeDescriptor, childrenNodes: NodeDescriptorTree[]) => {
   if (childrenNodes.length < 1) {
@@ -202,6 +205,9 @@ const mergeNodes = (rootNode: NodeDescriptor, childrenNodes: NodeDescriptorTree[
 
   return childrenNodes.reduce((accum, tree) => {
     const currentNode = tree.nodes[tree.rootNodeId];
+    if (currentNode.data.props.children) {
+      delete currentNode.data.props.children
+    }
     return {
       ...accum,
       ...tree.nodes,

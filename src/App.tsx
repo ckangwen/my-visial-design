@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Editor } from './core/editor/Editor';
 import { Frame } from './core/render/Frame';
 import { useNode } from './core/hooks/useNode';
@@ -13,7 +13,7 @@ function App() {
             <Container2 />
             <Container2 />
             <Container>
-              <Demo />
+              <DragItem />
             </Container>
           </Container3>
         </Frame>
@@ -22,11 +22,11 @@ function App() {
   );
 }
 
-const Demo: React.FC<any> = ({ children }) => {
+const DragItem: React.FC<any> = ({ children }) => {
   const {connect} = useNode()
-  const refFn = function (el) {
+  const refFn = useCallback(function (el) {
     connect(el)
-  }
+  }, [connect])
   return (
     <div className="drag-item" ref={refFn}>C</div>
   )
@@ -34,9 +34,9 @@ const Demo: React.FC<any> = ({ children }) => {
 
 const Container: React.FC<any> = ({ children }) => {
   const {connect} = useNode()
-  const refFn = function (el) {
+  const refFn = useCallback(function (el) {
     connect(el)
-  }
+  }, [connect])
   return (
     <div className="box" ref={refFn}>
       Box
@@ -47,9 +47,9 @@ const Container: React.FC<any> = ({ children }) => {
 
 const Container2: React.FC<any> = ({ children }) => {
   const {connect} = useNode()
-  const refFn = function (el) {
+  const refFn = useCallback(function (el) {
     connect(el)
-  }
+  }, [connect])
   return (
     <div className="box" ref={refFn}>
       Box2
@@ -58,9 +58,9 @@ const Container2: React.FC<any> = ({ children }) => {
 }
 const Container3: React.FC<any> = ({ children }) => {
   const {connect} = useNode()
-  const refFn = function (el) {
+  const refFn = useCallback(function (el) {
     connect(el)
-  }
+  }, [connect])
   return (
     <div className="box2" ref={refFn}>
       { children }

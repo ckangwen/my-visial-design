@@ -13,7 +13,7 @@ export function parseNodeFromJSX(
     element = createElement(Fragment, {}, element)
   }
 
-  let type = element.type
+  let type = element.type as any
 
   return createNodeDescriptor(
     {
@@ -35,6 +35,9 @@ export function createNodeDescriptor(
 ) {
   let actualType = newNode.data.type
   let id = newNode.id || getRandomId()
+  if (actualType) {
+    id = `${actualType.name}-${id}`
+  }
 
   let node = {} as NodeDescriptor
   node.id = id

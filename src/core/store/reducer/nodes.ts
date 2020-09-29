@@ -1,5 +1,5 @@
 import { produce } from 'immer'
-import { ADD_NODE, DELETE_NODE, ADD_MULIT_NODES, SET_NODE_DOM, UPDATE_NODE, UPDATE_NODE_PROPERTY, SET_NODES } from '../types';
+import { ADD_NODE, DELETE_NODE, ADD_MULIT_NODES, SET_NODE_DOM, UPDATE_NODE_PROPERTY, SET_NODES } from '../types';
 import {
   Action,
   NodeState,
@@ -9,6 +9,7 @@ import {
   UpdateNodePropertyPayload,
   SetNodesPayload
 } from '@/types'
+import { deepset } from '@/shared'
 
 const initialState = {
   nodes: {}
@@ -46,7 +47,7 @@ const createNodeReducer = produce((state: NodeState = initialState, action: Acti
 
     case UPDATE_NODE_PROPERTY: {
       const { id, key, value } = payload as UpdateNodePropertyPayload
-      state.nodes[id][key] = value
+      deepset(state.nodes[id], key, value)
       break
     }
   }

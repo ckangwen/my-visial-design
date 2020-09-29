@@ -1,10 +1,13 @@
 import { NodeIdType, Indicator } from '@/types';
 import { NodeHelper } from '../nodes/NodeHelper';
 import { updateIndicator } from '../store/actions/events';
-import { updateNodeProperty, setNodes } from '../store/actions/nodes';
+import { setNodeDOM, updateNodeProperty } from '../store/actions/nodes';
+import {
+  swip
+} from '@/shared';
 
 function getGlobalContext() {
-	return typeof global !== 'undefined' ? global : (window as any)
+  return typeof global !== 'undefined' ? global : (window as any)
 }
 const IdToDOM: Map<NodeIdType, Element> = new Map()
 const DomToId: Map<Element, NodeIdType> = new Map()
@@ -18,7 +21,7 @@ export class Connector {
   dispatch: any;
   indicator: Indicator
 
-  constructor({ id, helper }: { id?: NodeIdType, helper?: any} = {}) {
+  constructor({ id, helper }: { id?: NodeIdType, helper?: any } = {}) {
     this.helper = helper
 
     this.addListeners(getGlobalContext().window)
@@ -26,12 +29,16 @@ export class Connector {
 
   connect = (el: Element, id) => {
     el.setAttribute('draggable', 'true')
-    IdToDOM.set(id, el)
-    DomToId.set(el, id)
+    if (!DomToId.get(id)) {
+      DomToId.set(el, id)
+    }
+    if (!IdToDOM.get(id)) {
+      IdToDOM.set(id, el)
+      this.dispatch(setNodeDOM(id, el))
+    }
     this.id = id
 
     const handleDragStart = (e) => {
-      console.log('id', id);
       this.id = id
     }
     el.addEventListener('dragstart', handleDragStart)
@@ -55,7 +62,6 @@ export class Connector {
     target.addEventListener('dragstart', this.handleDragStart)
     target.addEventListener('dragenter', this.handleDragEnter)
     target.addEventListener('dragover', this.handleDragOver)
-    // target.addEventListener('drop', this.handleDrop)
 
   }
 
@@ -70,8 +76,7 @@ export class Connector {
     const dom = e.target
     const targetId = DomToId.get(dom)
     if (!targetId) return
-    const sourceId = this.id ? this.id : DomToId.get(this.el)
-    console.log(sourceId);
+    const sourceId = DomToId.get(this.el)
     const { clientX: x, clientY: y } = e
     const indicator = this.helper.getDropPlaceholder(
       sourceId,
@@ -97,14 +102,10 @@ export class Connector {
     // );
   }
   handleDrop = (e: Event) => {
-    e.stopPropagation()
     const { el, indicator } = this
     const { parent, where, dragNode } = indicator.placement
-    const index = indicator.placement.index + (where === 'after' ? 1 : 0)
-    const targetEl = e.target as Element
+    let index = indicator.placement.index + (where === 'after' ? 1 : 0)
 
-    // 放置元素的Id
-    const targetId = DomToId.get(targetEl)
     // 拖动元素Id
     const sourceId = DomToId.get(el)
 
@@ -112,23 +113,28 @@ export class Connector {
     let parentChildrenNodeIds = parent.data.nodes.slice()
     let sourceChildrenNodeIds = dragNode.data.nodes.slice()
     /**
+     * 如果是跨层级的更新
      * 1. 更新parent.data.nodes，将sourceId插入其中
-     * 2. 从Source的parent的nodes中移除source
-     * 3. 更新sourceNode的parent
-     * 4. 将el从原来的位置移除，插入到parent的index下标处
+     * 2. 修改dragNode的parent为parent的id
+     * 3. 从dragNode的parent的nodes中移除dragNode的id
+     * 4. 更新sourceNode的parent
+     * 5. 将el从原来的位置移除，插入到parent的index下标处
      */
 
-     parentChildrenNodeIds.splice(index, 0, sourceId)
-     sourceChildrenNodeIds.splice( sourceChildrenNodeIds.indexOf(sourceId), 1 )
-    //  this.dispatch(setNodes(parent.id, parentChildrenNodeIds))
-    //  this.dispatch(setNodes(dragNode.data.parent, sourceChildrenNodeIds))
+    const isSameLayer = parent.id === dragNode.data.parent
+    if (isSameLayer) {
+      index = Math.min(index, parent.data.nodes.length - 1)
+      parentChildrenNodeIds = swip(parentChildrenNodeIds, parentChildrenNodeIds.indexOf(sourceId), index)
+      this.dispatch(updateNodeProperty(parent.id, 'data.nodes', parentChildrenNodeIds))
+    } else {
+      parentChildrenNodeIds.splice(index, 0, sourceId)
+      sourceChildrenNodeIds.splice(sourceChildrenNodeIds.indexOf(sourceId), 1)
+      this.dispatch(updateNodeProperty(dragNode.data.parent, 'data.nodes', sourceChildrenNodeIds))
+      this.dispatch(updateNodeProperty(dragNode.id, 'data.parent', parent.id))
+      this.dispatch(updateNodeProperty(parent.id, 'data.nodes', parentChildrenNodeIds))
+    }
 
-    //  if (where === 'after') {
-    //    parent.dom.insertBefore(el, targetEl)
-    //  }
 
-    // 删除真实DOM
-    // el.parentNode.removeChild(el)
     this.el = null
     this.indicator = null
     this.dispatch(updateIndicator(null))
