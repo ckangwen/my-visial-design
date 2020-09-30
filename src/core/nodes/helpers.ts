@@ -1,6 +1,7 @@
 import React, { createElement, Fragment } from 'react'
 import { NodeDescriptor, NodeBoxInfo } from '@/types'
 import { getRandomId } from '@/shared'
+import { NodeProvider } from './NodeContext';
 
 type PartialNodeDescriptor = Partial<Pick<NodeDescriptor, 'data' | 'id'>>
 
@@ -75,6 +76,21 @@ export function createNodeDescriptor(
 
   if (normalize) {
     normalize(node);
+  }
+
+  if (actualType.craft) {
+    const relatedNodeContext = {
+      id: node.id,
+      related: true,
+    };
+    Object.keys(actualType.craft.related).forEach((comp) => {
+      node.related[comp] = () =>
+        React.createElement(
+          NodeProvider,
+          relatedNodeContext,
+          React.createElement(actualType.craft.related[comp])
+        );
+    });
   }
 
   return node

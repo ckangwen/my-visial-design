@@ -15,6 +15,7 @@ import {
 } from '@/types';
 import { parseNodeFromJSX, createNodeDescriptor } from './helpers';
 import findPosition from './helpers';
+import { updateNodeProperty } from '../store/actions/nodes';
 
 
 type NodeDescriptorTree = {
@@ -26,6 +27,7 @@ export class NodeHelper {
   node: NodeDescriptor
   id: NodeIdType
   nodes: NodeDescriptorMapping
+  dispatch: any;
 
   constructor(node?: NodeDescriptor, id?: NodeIdType) {
     this.node = node
@@ -40,6 +42,9 @@ export class NodeHelper {
   }
   receiveNodes(nodes: NodeDescriptorMapping) {
     this.nodes = nodes
+  }
+  reveiveDispatch(dispatch) {
+    this.dispatch = dispatch
   }
 
   getNode(id) {
@@ -97,11 +102,9 @@ export class NodeHelper {
       return false
     }
   }
-  toSerializedNode() {}
-  toNodeTree() {}
-
-  getSerializedNodes() {}
-  serialize() {}
+  setProp(id: NodeIdType, key: string, value: any) {
+    this.dispatch(updateNodeProperty(id, `data.props.${key}`, value))
+  }
   parseReactNode(reactElement, normalize?: (nodeDesc: NodeDescriptor, jsx: React.ReactElement) => void) {
     let node = parseNodeFromJSX(reactElement, (node, jsx) => {
       // const name = resolveComponent(state.options.resolver, node.data.type);

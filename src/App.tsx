@@ -1,5 +1,5 @@
 import React from 'react';
-import Demo from './examples/create'
+import Demo from './examples/related'
 import './index.css'
 
 function App() {

@@ -47,6 +47,7 @@ export class Connector {
         this.dispatch(updateEvent('dragged', id))
       }
     }
+    el.addEventListener('click', this.handleClick)
     el.addEventListener('dragstart', handleDragStart, false)
     el.addEventListener('drop', this.handleDrop)
     el.addEventListener('dragenter', this.handleDragEnter)
@@ -69,6 +70,11 @@ export class Connector {
 
     target.addEventListener('dragover', this.handleDragOver)
 
+  }
+
+  handleClick = (e: Event) => {
+    e.stopPropagation()
+    this.dispatch(updateEvent('selected', this.id))
   }
   handleDragEnter = (e: any) => {
     e.stopPropagation()

@@ -34,4 +34,4 @@ export type Placement = DropAction & {
   dragNode: NodeDescriptor | null
 };
 
-export type EventNameType = 'seleceed' | 'hovered' | 'dragged'
+export type EventNameType = 'selected' | 'hovered' | 'dragged'
