@@ -12,6 +12,6 @@ export function useNode() {
       if (el) {
         connector.connect(el, id)
       }
-    }, [connector, id])
+    }, [connector, id]),
   }
 }

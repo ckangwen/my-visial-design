@@ -45,27 +45,30 @@ const setNodesAction = (payload: SetNodesPayload): Action<SetNodesPayload> => ({
 
 export function addNewNode(node: NodeDescriptor, parentId: NodeIdType, index?: number) {
   return function (dispatch, getState) {
-    const { nodes } = getState()
+    const { nodes } = getState().nodes
 
     const parent = nodes[parentId]
 
-    if (parent.data.props.children) {
-      delete parent.data.props['children']
+    if (node.data.props.children) {
+      delete node.data.props['children']
     }
+
+    const parentNodes = parent.data.nodes.slice()
 
     // 子代通过parent确定关联，父代通过nodes确定关联
-    node.data.parent = parent.id
+    node.data.parent = parentId
+    index = Math.min(index, parent.data.nodes.length)
     if (index) {
       // 将node插入到parent.data.nodes的index位置
-      parent.data.nodes.splice(index, 0, node.id);
+      parentNodes.splice(index, 0, node.id);
     } else {
       // 插入末尾
-      parent.data.nodes.push(node.id);
+      parentNodes.push(node.id);
     }
 
-    // 更新父节点，添加子节点
-    dispatch(updateNodeAction({ id: parentId, node: parent }))
+    // 需要先把新的节点插入到nodes中
     dispatch(addNodeAction({ id: node.id, node }))
+    dispatch(updateNodeProperty(parentId, 'data.nodes', parentNodes))
   }
 }
 

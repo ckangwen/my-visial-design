@@ -1,3 +1,9 @@
+#app, #MY_CRAFT_ROOT {
+  display: flex;
+}
+.main {
+  flex: 1 1 auto;
+}
 .box {
   width: 150px;
   height: 150px;
@@ -17,4 +23,41 @@
   background: #000;
   color: #fff;
   cursor: move;
+}
+
+.sidebar {
+  width: 300px;
+  height: 100vh;
+}
+
+.el-button {
+  display: block;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  color: #fff;
+  background-color: #409eff;
+  border-color: #409eff;
+  -webkit-appearance: none;
+  text-align: center;
+  box-sizing: border-box;
+  outline: none;
+  margin: 0;
+  transition: .1s;
+  font-weight: 500;
+  -webkit-user-select: none;
+  padding: 12px 20px;
+  font-size: 14px;
+  border-radius: 4px;
+}
+
+.panel {
+  margin-bottom: 20px;
+  background-color: #fff;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  box-shadow: 0 1px 1px rgba(0,0,0,.05);
+}
+.panel-body {
+  padding: 15px;
 }

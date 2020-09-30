@@ -4,7 +4,7 @@ import { updateIndicator } from '../store/actions/events';
 import { setNodeDOM, updateNodeProperty } from '../store/actions/nodes';
 import {
   swip
-} from '@/shared';
+} from '@/shared'
 
 function getGlobalContext() {
   return typeof global !== 'undefined' ? global : (window as any)
@@ -73,10 +73,12 @@ export class Connector {
     this.el = e.target
   }
   handleDragEnter = (e: any) => {
+    e.stopPropagation()
+    e.preventDefault();
     const dom = e.target
     const targetId = DomToId.get(dom)
     if (!targetId) return
-    const sourceId = DomToId.get(this.el)
+    const sourceId = DomToId.get(this.el) // sourceId可能为空，比如在Toolbox向Frame进行拖拽的时候
     const { clientX: x, clientY: y } = e
     const indicator = this.helper.getDropPlaceholder(
       sourceId,
@@ -90,20 +92,14 @@ export class Connector {
   handleDragOver(e: Event) {
     e.preventDefault();
   }
-  handleDragEnd = (e: any) => {
-    // const targetNode = state.nodes[targetId],
-    // currentParentId = targetNode.data.parent!,
-    // newParent = state.nodes[newParentId],
-    // newParentNodes = newParent.data.nodes;
-    // move(
-    //   draggedElement as NodeId,
-    //   placement.parent.id,
-    //   placement.index + (placement.where === 'after' ? 1 : 0)
-    // );
-  }
   handleDrop = (e: Event) => {
     const { el, indicator } = this
     const { parent, where, dragNode } = indicator.placement
+    if (!dragNode) { // 不是在Frame中进行的拖拽
+      this.el = null
+      this.indicator = null
+      return
+    }
     let index = indicator.placement.index + (where === 'after' ? 1 : 0)
 
     // 拖动元素Id
@@ -134,12 +130,8 @@ export class Connector {
       this.dispatch(updateNodeProperty(parent.id, 'data.nodes', parentChildrenNodeIds))
     }
 
-
     this.el = null
     this.indicator = null
     this.dispatch(updateIndicator(null))
-  }
-  handleHover() {
-    // 更新events.hovered
   }
 }
