@@ -2,7 +2,8 @@ import { UPDATE_EVENT, UPDATE_INDICATOR } from '../types';
 import {
   Action,
   UpdateEventPayload,
-  NodeIdType
+  NodeIdType,
+  EventNameType
 } from '@/types'
 
 export const updateEventAction = (payload: UpdateEventPayload): Action<UpdateEventPayload> => ({
@@ -14,15 +15,9 @@ export const updateIndicatorAction = (payload) => ({
   payload
 })
 
-export function updateEvents(id: NodeIdType, isDelete?: boolean) {
-  return function (dispatch, getState) {
-    const events = getState().events
-
-    Object.keys(events).forEach(key => {
-      if (events[key] && events[key] === id) {
-        dispatch(updateEventAction({ key, value: isDelete ? null : id }))
-      }
-    })
+export function updateEvent(key: EventNameType, value: NodeIdType | null) {
+  return function (dispatch) {
+    dispatch(updateEventAction({ key, value }))
   }
 }
 

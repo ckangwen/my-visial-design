@@ -1,6 +1,6 @@
 import { NodeIdType, Indicator } from '@/types';
 import { NodeHelper } from '../nodes/NodeHelper';
-import { updateIndicator } from '../store/actions/events';
+import { updateIndicator, updateEvent } from '../store/actions/events';
 import { setNodeDOM, updateNodeProperty } from '../store/actions/nodes';
 import {
   swip
@@ -38,11 +38,14 @@ export class Connector {
     }
     this.id = id
 
-    const handleDragStart = (e) => {
+    const handleDragStart = (e: Event) => {
       this.id = id
+      console.log(111, id);
     }
     el.addEventListener('dragstart', handleDragStart)
     el.addEventListener('drop', this.handleDrop)
+    el.addEventListener('mouseover', this.handleMouseover)
+    el.addEventListener('mouseout', this.handleMouseout)
   }
 
   receiveId(id: NodeIdType) {
@@ -65,12 +68,9 @@ export class Connector {
 
   }
 
-  handleDragStart = (e: any) => {
-    // 更新events.dragged为当前id
-    if (e.defaultPrevented) {
-      return
-    }
-    this.el = e.target
+  handleDragStart = (e: Event) => {
+    e.stopPropagation()
+    this.el = e.target as Element
   }
   handleDragEnter = (e: any) => {
     e.stopPropagation()
@@ -133,5 +133,13 @@ export class Connector {
     this.el = null
     this.indicator = null
     this.dispatch(updateIndicator(null))
+  }
+  handleMouseover = (e: Event) => {
+    e.stopPropagation()
+    // this.dispatch(updateEvent('hovered', this.id))
+  }
+  handleMouseout = (e: Event) => {
+    e.preventDefault()
+    // this.dispatch(updateEvent('hovered', null))
   }
 }
