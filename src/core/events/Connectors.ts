@@ -39,11 +39,17 @@ export class Connector {
     this.id = id
 
     const handleDragStart = (e: Event) => {
+    // e.stopPropagation()
       this.id = id
-      console.log(111, id);
+      const el = e.target as Element
+      this.el = el
+      if (id === DomToId.get(el)) {
+        this.dispatch(updateEvent('dragged', id))
+      }
     }
-    el.addEventListener('dragstart', handleDragStart)
+    el.addEventListener('dragstart', handleDragStart, false)
     el.addEventListener('drop', this.handleDrop)
+    el.addEventListener('dragenter', this.handleDragEnter)
     el.addEventListener('mouseover', this.handleMouseover)
     el.addEventListener('mouseout', this.handleMouseout)
   }
@@ -61,16 +67,8 @@ export class Connector {
   addListeners = (target: Node) => {
     if (!target.addEventListener) return
 
-    // 拖拽子元素，则捕获先执行；拖拽本元素，则冒泡先执行
-    target.addEventListener('dragstart', this.handleDragStart)
-    target.addEventListener('dragenter', this.handleDragEnter)
     target.addEventListener('dragover', this.handleDragOver)
 
-  }
-
-  handleDragStart = (e: Event) => {
-    e.stopPropagation()
-    this.el = e.target as Element
   }
   handleDragEnter = (e: any) => {
     e.stopPropagation()
@@ -90,10 +88,12 @@ export class Connector {
     this.dispatch(updateIndicator(indicator))
   }
   handleDragOver(e: Event) {
+    // dragenter和dragover事件的默认行为是拒绝接受任何被拖放的元素。因此，我们需要阻止浏览器这种默认行为
     e.preventDefault();
   }
   handleDrop = (e: Event) => {
     const { el, indicator } = this
+    if (!indicator) return
     const { parent, where, dragNode } = indicator.placement
     if (!dragNode) { // 不是在Frame中进行的拖拽
       this.el = null
