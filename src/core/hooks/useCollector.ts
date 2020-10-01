@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useSelector, useStore } from "react-redux";
-import { store } from '../store/index';
+import { useStore } from "react-redux";
 import { useNodeHelper } from './useNodeHelper';
 
 /**
  * (state) => state.nodes
  */
-export function useCollector(collector) {
+export function useCollector(collector?: Function) {
   const { subscribe, getState } = useStore()
   const nodeHelper = useNodeHelper()
 

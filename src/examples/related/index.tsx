@@ -1,10 +1,10 @@
 import React, { useCallback } from 'react';
 import { Editor } from '@/core/editor/Editor';
 import { Frame } from '@/core/render/Frame';
-import { useNode } from '@/core/hooks/useNode';
-
-import '@/index.css'
 import { useCollector } from '../../core/hooks/useCollector';
+import { useNode } from '@/core/hooks/useNode';
+import MyButton from './MyButton'
+import '@/index.css'
 
 function App() {
   return (
@@ -15,7 +15,7 @@ function App() {
               <Container2 />
               <Container2 />
               <Container>
-                <DragItem />
+                <MyButton text="Antd Button" type="primary" loading={false} disabled={false} />
               </Container>
             </Container3>
           </Frame>
@@ -54,20 +54,11 @@ const SettingsPanel = () => {
 
   return (
     <div>
-      <h2>Settings - { selected && selected.displayName }</h2>
-
+      {
+        selected && selected.displayName && (<h2>Settings -{selected.displayName}</h2>)
+      }
       {selected && selected.setting && React.createElement(selected.setting)}
     </div>
-  )
-}
-
-const DragItem: React.FC<any> = ({ children }) => {
-  const {connect} = useNode()
-  const refFn = useCallback(function (el) {
-    connect(el)
-  }, [connect])
-  return (
-    <div className="drag-item" ref={refFn}>C</div>
   )
 }
 
@@ -78,7 +69,6 @@ const Container: React.FC<any> = ({ children }) => {
   }, [connect])
   return (
     <div className="box" ref={refFn}>
-      Box
       { children }
     </div>
   )
@@ -105,18 +95,6 @@ const Container3: React.FC<any> = ({ children }) => {
       { children }
     </div>
   )
-}
-
-const DragItemSetting = () => {
-  return (
-    <p>Button Setting</p>
-  )
-}
-
-(DragItem as any).craft = {
-  related: {
-    setting: DragItemSetting
-  }
 }
 
 export default App;

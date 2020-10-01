@@ -102,7 +102,7 @@ export class NodeHelper {
       return false
     }
   }
-  setProp(id: NodeIdType, key: string, value: any) {
+  setProp(key: string, value: any, id: NodeIdType = this.id) {
     this.dispatch(updateNodeProperty(id, `data.props.${key}`, value))
   }
   parseReactNode(reactElement, normalize?: (nodeDesc: NodeDescriptor, jsx: React.ReactElement) => void) {
