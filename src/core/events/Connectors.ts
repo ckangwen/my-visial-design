@@ -3,6 +3,7 @@ import { NodeHelper } from '../nodes/NodeHelper';
 import { updateIndicator, updateEvent } from '../store/actions/events';
 import { setNodeDOM, updateNodeProperty } from '../store/actions/nodes';
 import {
+  ROOT_ELEMENT_ID,
   swip
 } from '@/shared'
 
@@ -14,6 +15,7 @@ const DomToId: Map<Element, NodeIdType> = new Map()
 
 export class Connector {
   id: string
+  dropId: string | null = null
   targetId?: NodeIdType
   dragSourceShadow: any
   el: Element
@@ -49,8 +51,8 @@ export class Connector {
     }
     el.addEventListener('click', this.handleClick)
     el.addEventListener('dragstart', handleDragStart, false)
-    el.addEventListener('drop', this.handleDrop)
-    el.addEventListener('dragenter', this.handleDragEnter)
+    document.getElementById(ROOT_ELEMENT_ID).addEventListener('drop', this.handleDrop)
+    document.getElementById(ROOT_ELEMENT_ID).addEventListener('dragenter', this.handleDragEnter)
     el.addEventListener('mouseover', this.handleMouseover)
     el.addEventListener('mouseout', this.handleMouseout)
   }
@@ -79,25 +81,31 @@ export class Connector {
   handleDragEnter = (e: any) => {
     e.stopPropagation()
     e.preventDefault();
-    const dom = e.target
-    const targetId = DomToId.get(dom)
-    if (!targetId) return
-    const sourceId = DomToId.get(this.el) // sourceId可能为空，比如在Toolbox向Frame进行拖拽的时候
-    const { clientX: x, clientY: y } = e
-    const indicator = this.helper.getDropPlaceholder(
-      sourceId,
-      targetId,
-      { x, y }
-    )
-    this.indicator = indicator
+    if (this.isSameDndEvent()) {
+      const dom = e.target
+      const targetId = getTargetId(dom)
+      this.dropId = targetId
+      if (!targetId) return
 
-    this.dispatch(updateIndicator(indicator))
+      const sourceId = this.id // sourceId可能为空，比如在Toolbox向Frame进行拖拽的时候
+      const { clientX: x, clientY: y } = e
+      const indicator = this.helper.getDropPlaceholder(
+        sourceId,
+        targetId,
+        { x, y }
+      )
+      this.indicator = indicator
+
+      this.dispatch(updateIndicator(indicator))
+    }
+
   }
   handleDragOver(e: Event) {
     // dragenter和dragover事件的默认行为是拒绝接受任何被拖放的元素。因此，我们需要阻止浏览器这种默认行为
     e.preventDefault();
   }
   handleDrop = (e: Event) => {
+    if (!this.isSameDndEvent()) return
     const { el, indicator } = this
     if (!indicator) return
     const { parent, where, dragNode } = indicator.placement
@@ -148,4 +156,20 @@ export class Connector {
     e.preventDefault()
     // this.dispatch(updateEvent('hovered', null))
   }
+
+  private isSameDndEvent() {
+    return this.id === DomToId.get(this.el)
+  }
+}
+
+const getTargetId = (dom: Element) => {
+  while( dom && !dom.getAttribute('draggable') && dom.id !== ROOT_ELEMENT_ID) {
+    dom = dom.parentElement
+  }
+  if (!dom) return
+  let id = DomToId.get(dom)
+  if (!id) {
+    return getTargetId(dom.parentElement)
+  }
+  return id
 }

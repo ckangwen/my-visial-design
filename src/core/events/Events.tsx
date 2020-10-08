@@ -9,7 +9,7 @@ export const Events: React.FC = ({ children }) => {
   return (
     <React.Fragment>
       {
-        indicator && React.createElement(RenderIndicator, {
+        indicator && indicator.placement.parent.dom && React.createElement(RenderIndicator, {
           style: {
             ...movePlaceholder(
               indicator.placement,

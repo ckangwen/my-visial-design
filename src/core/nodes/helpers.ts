@@ -34,6 +34,7 @@ export function createNodeDescriptor(
   newNode: PartialNodeDescriptor,
   normalize?: (node: NodeDescriptor) => void
 ) {
+  /* 文本元素，actualType为undefined */
   let actualType = newNode.data.type
   let id = newNode.id || getRandomId()
   if (actualType) {
@@ -77,6 +78,8 @@ export function createNodeDescriptor(
   if (normalize) {
     normalize(node);
   }
+
+  if (!actualType) return node
 
   if (actualType.craft) {
     const relatedNodeContext = {
