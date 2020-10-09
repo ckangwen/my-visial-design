@@ -23,8 +23,7 @@ export const RenderNodeDescriptor: React.FC<any> = () => {
 
   return useMemo(() => {
     const targetNode: NodeDescriptor = nodes[id]
-    console.log(id);
-    
+
     if (!targetNode) return null
     const { data: { type, props, nodes: nodeIds, text } } = targetNode
     const render = type ? React.createElement(

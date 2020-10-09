@@ -1,7 +1,9 @@
 import { NodeIdType, Indicator } from '@/types';
 import { NodeHelper } from '../nodes/NodeHelper';
-import { addNewNode } from '../store/actions/nodes';
+import { addNewNode, addMulitNodes } from '../store/actions/nodes';
 import { updateIndicator } from '../store/actions/events';
+import { ROOT_ELEMENT_ID } from '../../shared/constants';
+import { getTargetId } from './dom-id-mapping';
 
 export class CreateConnector {
   helper: NodeHelper
@@ -18,7 +20,8 @@ export class CreateConnector {
     el.setAttribute('draggable', 'true')
 
     el.addEventListener('dragstart', this.handleDragStart)
-    el.addEventListener('dragend', this.handleDragEnd)
+    document.getElementById(ROOT_ELEMENT_ID).addEventListener('dragend', this.handleDragEnd)
+    document.getElementById(ROOT_ELEMENT_ID).addEventListener('dragenter', this.handleDragEnter)
   }
 
   receiveHelper(helper: any) {
@@ -27,21 +30,44 @@ export class CreateConnector {
   receiveDispatch(dispatch: any) {
     this.dispatch = dispatch
   }
-  reveiveState(state) {
-    this.indicator = state.indicator
-  }
 
   handleDragStart = (e: any) => {
-    console.log('dragstart');
   }
-  handleDragEnd = (e: any) => {
+  handleDragEnter = (e: any) => {
+    const dom = e.target as Element
+    const targetId = getTargetId(dom)
+    if (!targetId) return
+    const sourceId = undefined
+    const { clientX: x, clientY: y } = e
+    const indicator = this.helper.getDropPlaceholder(
+      sourceId,
+      targetId,
+      { x, y }
+    )
+    this.indicator = indicator
+    this.dispatch(updateIndicator(indicator))
+  }
+
+  handleDragEnd = (e: Event) => {
     if (!this.indicator) return
     const nodeTree = this.helper.parseReactNode(this.block)
-    const nodeDescriptor = nodeTree.nodes[nodeTree.rootNodeId]
+    const rootNodeId = nodeTree.rootNodeId
+    let nodeDescriptor = nodeTree.nodes[rootNodeId]
     const { placement: { parent, index } } = this.indicator
-    console.log(this.indicator);
     const parentId = parent.id
+    const childNodes = omit(nodeTree.nodes, [rootNodeId])
+
     this.dispatch(addNewNode(nodeDescriptor, parentId, index))
+    this.dispatch(addMulitNodes(childNodes))
     this.dispatch(updateIndicator(null))
   }
+}
+
+function omit(obj: any, keys: string[]) {
+  const res = {} as any
+  Object.keys(obj).forEach(key => {
+    if (keys.indexOf(key) > -1) return
+    res[key] = obj[key]
+  })
+  return res
 }

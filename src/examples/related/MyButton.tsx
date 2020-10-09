@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { Form, Input, Button, Select, Switch } from 'antd'
+import { Form, Input, Button, Select, Switch, InputNumber, Radio } from 'antd'
 import { useNode } from '@/core/hooks/useNode';
 
 import 'antd/dist/antd.min.css'
@@ -42,12 +42,45 @@ const DragItemSetting = () => {
     nodeHelper.setProp(key, value)
   }, [nodeHelper, propsCopy])
 
+  const generateFormItem = (name: string, value: any) => {
+    const type = typeof value
+    let children = null
+    if (type === 'string') {
+      children=  <Input onChange={(e: any) => onChange(e.target.value, name)} />
+    }
+    if (type === 'boolean') {
+      children =  <Switch checked={propsCopy.disabled} onChange={(value) => onChange(value, name)} />
+    }
+    if (type === 'number') {
+      children = <InputNumber onChange={(value) => onChange(value, name)} />
+    }
+    if (Array.isArray(value)) {
+      children = (
+        <Radio.Group onChange={(value) => onChange(value, name)}>
+          {
+            value.map(val => (<Radio.Button value={val}>{val}</Radio.Button>))
+          }
+      </Radio.Group>
+      )
+    }
+
+    return (
+      <Form.Item key={name} label={name} name={name}>
+        { children }
+      </Form.Item>
+    )
+  }
+  console.log(propsCopy);
+
   return (
     <Form
       {...layout}
       initialValues={propsCopy}
     >
-      <Form.Item label="Text" name="text">
+      {
+        Object.keys(propsCopy).map(key => (generateFormItem(key, propsCopy[key])))
+      }
+      {/* <Form.Item label="Text" name="text">
         <Input onChange={(e: any) => onChange(e.target.value, 'text')} />
       </Form.Item>
 
@@ -63,7 +96,7 @@ const DragItemSetting = () => {
       </Form.Item>
       <Form.Item label="Disabled" name="disabled">
         <Switch checked={propsCopy.disabled} onChange={(value) => onChange(value, 'disabled')} />
-      </Form.Item>
+      </Form.Item> */}
     </Form>
   );
 };

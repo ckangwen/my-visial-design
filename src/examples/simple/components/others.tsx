@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react'
 import { Card as ACard, Carousel as ACarousel, Image as AImage, Button as AButton, Alert as AAlert } from 'antd';
 import { useNodeRef } from '../hooks/useNodeRef';
+import { ComponentSetting } from './setting';
 const Grid = ACard.Grid as any
 
 class Wrapper extends React.Component {
@@ -112,4 +113,14 @@ export const Alert = ({ children = null, ...props }) => {
       </AAlert>
     </Wrapper>
   )
+}
+
+(Card as any).craft =
+(Carousel as any).craft =
+(Button as any).craft =
+(Alert as any).craft =
+{
+  related: {
+    setting: ComponentSetting
+  }
 }

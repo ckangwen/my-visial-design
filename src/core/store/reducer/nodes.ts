@@ -30,7 +30,7 @@ const createNodeReducer = produce((state: NodeState = initialState, action: Acti
     }
     case ADD_MULIT_NODES: {
       const { nodes } = payload as AddMulitNodesPayload
-      state.nodes = nodes
+      state.nodes = { ...state.nodes, ...nodes }
       break
     }
 

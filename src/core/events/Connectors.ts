@@ -2,6 +2,7 @@ import { NodeIdType, Indicator } from '@/types';
 import { NodeHelper } from '../nodes/NodeHelper';
 import { updateIndicator, updateEvent } from '../store/actions/events';
 import { setNodeDOM, updateNodeProperty } from '../store/actions/nodes';
+import { IdToDOM, DomToId, getTargetId } from './dom-id-mapping';
 import {
   ROOT_ELEMENT_ID,
   swip
@@ -10,8 +11,6 @@ import {
 function getGlobalContext() {
   return typeof global !== 'undefined' ? global : (window as any)
 }
-const IdToDOM: Map<NodeIdType, Element> = new Map()
-const DomToId: Map<Element, NodeIdType> = new Map()
 
 export class Connector {
   id: string
@@ -160,16 +159,4 @@ export class Connector {
   private isSameDndEvent() {
     return this.id === DomToId.get(this.el)
   }
-}
-
-const getTargetId = (dom: Element) => {
-  while( dom && !dom.getAttribute('draggable') && dom.id !== ROOT_ELEMENT_ID) {
-    dom = dom.parentElement
-  }
-  if (!dom) return
-  let id = DomToId.get(dom)
-  if (!id) {
-    return getTargetId(dom.parentElement)
-  }
-  return id
 }

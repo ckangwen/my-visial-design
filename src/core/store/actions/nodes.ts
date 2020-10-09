@@ -72,7 +72,7 @@ export function addNewNode(node: NodeDescriptor, parentId: NodeIdType, index?: n
   }
 }
 
-export function addNodesB(nodes: PlainObject<NodeDescriptor>) {
+export function addMulitNodes(nodes: PlainObject<NodeDescriptor>) {
   return function(dispatch) {
     dispatch(addMulitNodesAction({ nodes }))
   }

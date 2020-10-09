@@ -1,7 +1,7 @@
 import React, {  useEffect, useRef } from 'react'
 import { useDispatch } from 'react-redux'
 import { ROOT_ID } from '../../shared/constants';
-import { addNodesB } from '../store/actions/nodes';
+import { addMulitNodes } from '../store/actions/nodes';
 import { NodeElement } from '../nodes/NodeElement';
 import { useNodeHelper } from '../hooks/useNodeHelper';
 
@@ -25,7 +25,7 @@ export const Frame: React.FC<any> = ({ children }) => {
         }
         return node;
       })
-      dispatch(addNodesB(nodeTree.nodes))
+      dispatch(addMulitNodes(nodeTree.nodes))
       inited.current = true
     }
 
